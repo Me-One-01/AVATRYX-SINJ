@@ -44,7 +44,7 @@ export async function registerRoutes(
 
   app.post("/api/avatar/:id/upload-mesh", upload.single("mesh"), async (req, res) => {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const avatar = await storage.getAvatar(id);
       if (!avatar) {
         return res.status(404).json({ message: "Avatar not found" });
