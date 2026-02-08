@@ -1,37 +1,81 @@
-import { type User, type InsertUser } from "@shared/schema";
 import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import type { AvatarState, AvatarPose, AvatarObject } from "@shared/schema";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  createAvatar(meshType: "hybrik" | "pifuhd"): Promise<AvatarState>;
+  getAvatar(id: string): Promise<AvatarState | undefined>;
+  updateMeshPath(id: string, meshPath: string, fileName: string): Promise<AvatarState | undefined>;
+  updatePose(id: string, pose: AvatarPose): Promise<AvatarState | undefined>;
+  updateOutfit(id: string, outfit: string | null): Promise<AvatarState | undefined>;
+  addObject(id: string, object: AvatarObject): Promise<AvatarState | undefined>;
 }
 
 export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+  private avatars: Map<string, AvatarState>;
 
   constructor() {
-    this.users = new Map();
+    this.avatars = new Map();
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async createAvatar(meshType: "hybrik" | "pifuhd"): Promise<AvatarState> {
+    const avatarId = randomUUID();
+    const avatar: AvatarState = {
+      avatarId,
+      baseMesh: {
+        type: meshType,
+        meshPath: null,
+        originalFileName: null,
+      },
+      rig: {
+        type: "auto-rigged",
+        skeleton: "humanoid",
+      },
+      pose: {
+        source: "preset",
+        presetName: "Relaxed",
+      },
+      appearance: {
+        outfit: null,
+        textureMaps: [],
+      },
+      objects: [],
+      createdAt: new Date().toISOString(),
+    };
+    this.avatars.set(avatarId, avatar);
+    return avatar;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getAvatar(id: string): Promise<AvatarState | undefined> {
+    return this.avatars.get(id);
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateMeshPath(id: string, meshPath: string, fileName: string): Promise<AvatarState | undefined> {
+    const avatar = this.avatars.get(id);
+    if (!avatar) return undefined;
+    avatar.baseMesh.meshPath = meshPath;
+    avatar.baseMesh.originalFileName = fileName;
+    return avatar;
+  }
+
+  async updatePose(id: string, pose: AvatarPose): Promise<AvatarState | undefined> {
+    const avatar = this.avatars.get(id);
+    if (!avatar) return undefined;
+    avatar.pose = pose;
+    return avatar;
+  }
+
+  async updateOutfit(id: string, outfit: string | null): Promise<AvatarState | undefined> {
+    const avatar = this.avatars.get(id);
+    if (!avatar) return undefined;
+    avatar.appearance.outfit = outfit;
+    return avatar;
+  }
+
+  async addObject(id: string, object: AvatarObject): Promise<AvatarState | undefined> {
+    const avatar = this.avatars.get(id);
+    if (!avatar) return undefined;
+    avatar.objects.push(object);
+    return avatar;
   }
 }
 
