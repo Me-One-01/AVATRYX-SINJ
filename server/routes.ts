@@ -6,8 +6,9 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { randomUUID } from "crypto";
+import { exec } from "child_process";
 
-const uploadsDir = path.resolve(process.cwd(), "uploads", "meshes");
+const uploadsDir = path.join(process.cwd(), "uploads", "meshes");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
@@ -27,7 +28,7 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  app.use("/uploads", (await import("express")).default.static(path.resolve(process.cwd(), "uploads")));
+  app.use("/uploads", (await import("express")).default.static(path.join(process.cwd(), "uploads")));
 
   app.post("/api/avatar", async (req, res) => {
     try {
@@ -52,11 +53,55 @@ export async function registerRoutes(
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
-      const meshPath = `/uploads/meshes/${req.file.filename}`;
-      const updated = await storage.updateMeshPath(id, meshPath, req.file.originalname);
-      res.json(updated);
+
+      const sinjDir = path.join(process.cwd(), "SINJ");
+      const inputPath = path.join(sinjDir, "input.jpg");
+      const outputDir = path.join(sinjDir, "res");
+      const originalName = req.file.originalname;
+
+      fs.copyFileSync(req.file.path, inputPath);
+
+      const command = `cmd /c "cd /d \"${sinjDir}\" && set PYTHONPATH=%CD% && call sinj-env\\Scripts\\activate && python scripts/demo_image.py --img-dir . --out-dir res"`;
+
+      exec(command, async (error, stdout, stderr) => {
+        if (error) {
+          console.error("Python Error:", stderr);
+          return res.status(500).json({ message: "Python execution failed" });
+        }
+
+        console.log(stdout);
+
+        if (!fs.existsSync(outputDir)) {
+          return res.status(500).json({ message: "Output folder missing" });
+        }
+
+        const files = fs.readdirSync(outputDir).filter((f) => f.endsWith(".obj"));
+        if (files.length === 0) {
+          return res.status(500).json({ message: "No OBJ generated" });
+        }
+
+        files.sort((a, b) => {
+          return fs.statSync(path.join(outputDir, b)).mtime.getTime() - fs.statSync(path.join(outputDir, a)).mtime.getTime();
+        });
+
+        const latestObj = files[0];
+        const meshUrl = `/SINJ/${latestObj}`;
+
+        const sourcePath = path.join(outputDir, latestObj);
+        const newFileName = `${randomUUID()}.obj`;
+        const newPath = path.join(uploadsDir, newFileName);
+
+        fs.copyFileSync(sourcePath, newPath);
+
+        const meshPath = `/uploads/meshes/${newFileName}`;
+        const updated = await storage.updateMeshPath(id, meshPath, originalName);
+
+        return res.json({ ...updated, meshUrl });
+      });
+
     } catch (err: any) {
-      res.status(500).json({ message: err.message || "Server error" });
+      console.error(err);
+      res.status(500).json({ message: err.message });
     }
   });
 

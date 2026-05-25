@@ -1,0 +1,90 @@
+# Reproducible Python dependencies for AVATRYX/SINJ.
+#
+# Recommended Python: 3.9.x
+# This file is intentionally pinned with exact versions so a fresh clone can be
+# rebuilt later without silently pulling incompatible newer packages.
+#
+# Install:
+#   python -m venv SINJ/sinj-env
+#   SINJ\sinj-env\Scripts\activate
+#   python -m pip install --upgrade pip setuptools wheel
+#   python -m pip install -r requirements.txt
+#
+# Notes:
+# - Keep the local package importable by running commands from the repo root,
+#   or install it in editable mode with: python -m pip install -e SINJ
+# - PyTorch wheels are platform-specific. If torch/torchvision fail to install
+#   on your machine, install the matching wheel from https://pytorch.org first,
+#   then rerun this file.
+# - PyTorch3D is optional for the CPU-only SINJ/scripts/demo_image.py path, but
+#   required by video rendering and ml-server/scripts/demo_image.py.
+
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+torch==2.8.0
+torchvision==0.23.0
+torchaudio==2.8.0
+
+Flask==3.0.3
+flask-cors==4.0.1
+Werkzeug==3.1.8
+itsdangerous==2.2.0
+click==8.1.8
+blinker==1.9.0
+importlib-metadata==8.7.1
+
+numpy==1.23.5
+scipy==1.13.1
+opencv-python==4.6.0.66
+Pillow==10.4.0
+matplotlib==3.8.4
+contourpy==1.3.0
+cycler==0.12.1
+fonttools==4.60.2
+kiwisolver==1.4.7
+pyparsing==3.3.2
+python-dateutil==2.9.0.post0
+importlib-resources==6.5.2
+
+easydict==1.13
+PyYAML==6.0.3
+yacs==0.1.8
+tqdm==4.67.3
+colorama==0.4.6
+joblib==1.4.2
+pycocotools==2.0.7
+chumpy==0.71
+smplx==0.1.28
+trimesh==4.11.5
+plyfile==1.1.3
+prettytable==3.16.0
+terminaltables==3.1.10
+ffmpeg-python==0.2.0
+future==1.0.0
+six==1.17.0
+Cython==0.29.37
+
+tensorboard==2.17.1
+absl-py==2.3.1
+grpcio==1.80.0
+Markdown==3.9
+protobuf==6.33.6
+tensorboard-data-server==0.7.2
+
+filelock==3.19.1
+fsspec==2025.10.0
+Jinja2==3.1.6
+MarkupSafe==3.0.3
+networkx==3.2.1
+packaging==26.0
+sympy==1.14.0
+mpmath==1.3.0
+typing_extensions==4.15.0
+wcwidth==0.6.0
+zipp==3.23.0
+
+# Optional renderer dependency:
+# PyTorch3D often needs a platform-specific install command, especially on
+# Windows. Use the official command for your Python/CUDA/Torch combination:
+#   https://github.com/facebookresearch/pytorch3d/blob/main/INSTALL.md
+# pytorch3d==0.7.8

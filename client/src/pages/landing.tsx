@@ -45,8 +45,10 @@ export default function Landing() {
 
       <nav className="relative z-10 flex items-center justify-between gap-4 flex-wrap px-6 py-4 border-b border-white/[0.06] backdrop-blur-md bg-background/60">
         <div className="flex items-center gap-2">
-          <Box className="w-7 h-7 text-primary" />
-          <span className="text-xl font-bold tracking-tight text-foreground" data-testid="text-brand-name">AVATRYX</span>
+          <img src="/my-logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+          <span className="text-xl font-bold tracking-tight text-foreground logo-text" data-testid="text-brand-name">
+            AVATRYX
+          </span>
         </div>
         <Link href="/build">
           <Button data-testid="button-nav-start">

@@ -1,6 +1,94 @@
-node_modules
-dist
+# =========================
+# NODE / FRONTEND
+# =========================
+node_modules/
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# ENVIRONMENT FILES
+# =========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =========================
+# PYTHON
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+SINJ/sinj-env/
+
+# =========================
+# ML GENERATED OUTPUTS
+# =========================
+uploads/meshes/*
+SINJ/res/*
+
+# Keep folder structure
+!uploads/meshes/.gitkeep
+!SINJ/res/.gitkeep
+
+# =========================
+# LARGE MODEL FILES
+# =========================
+
+# Pretrained models
+SINJ/pretrained_models/*.pth
+SINJ/pretrained_models/*.pt
+SINJ/pretrained_models/*.ckpt
+SINJ/pretrained_models/*.bin
+
+# Model parameter files
+SINJ/model_files/*.pkl
+SINJ/model_files/*.npz
+SINJ/model_files/*.npy
+SINJ/model_files/*.h5
+
+# =========================
+# VS CODE / IDE
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# SYSTEM FILES
+# =========================
 .DS_Store
-server/public
-vite.config.ts.*
-*.tar.gz
+Thumbs.db
+desktop.ini
+
+# =========================
+# LOCAL / TEMP FILES
+# =========================
+.local/
+.replit/
+
+# =========================
+# CACHE
+# =========================
+.cache/
+tmp/
+temp/
+
+# =========================
+# OPTIONAL
+# =========================
+*.log
+
+uploads/meshes/*
+!uploads/meshes/.gitkeep

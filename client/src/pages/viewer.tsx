@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Link, useParams } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -157,11 +157,11 @@ export default function Viewer() {
           </Link>
           <div className="flex items-center gap-2">
             <Box className="w-5 h-5 text-primary" />
-            <span className="font-bold tracking-tight text-foreground">AVATRYX</span>
+            <span className="font-bold tracking-tight text-foreground logo-text">AVATRYX</span>
           </div>
           {avatar && (
             <Badge variant="secondary">
-              {avatar.baseMesh.type.toUpperCase()}
+              {avatar.baseMesh.type === "hybrik" ? "SINJ" : avatar.baseMesh.type.toUpperCase()}
             </Badge>
           )}
         </div>

@@ -286,3 +286,7 @@
     inset: -1px;
   }
 }
+
+.logo-text {
+  font-family: 'Sirin Stencil', sans-serif;
+}

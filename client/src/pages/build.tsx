@@ -35,15 +35,15 @@ type MeshOption = {
 
 const meshOptions: MeshOption[] = [
   {
-    id: "hybrik-image",
+    id: "SINJ-image",
     title: "Image to Motion Mesh",
-    description: "Generate a motion-accurate 3D human mesh from a single image using HybrIK.",
+    description: "Generate a motion-accurate 3D human mesh from a single image using SINJ.",
     strengths: ["Accurate body proportions", "Pose estimation", "Fast processing"],
     limitations: ["Single viewpoint only", "Lower clothing detail"],
     icon: Camera,
     meshType: "hybrik",
     sourceType: "image",
-    accept: ".png",
+    accept: ".png, .jpeg, .jpg",
   },
   {
     id: "pifuhd-image",
@@ -57,9 +57,9 @@ const meshOptions: MeshOption[] = [
     accept: ".png",
   },
   {
-    id: "hybrik-video",
+    id: "SINJ-video",
     title: "Video to Motion Capture",
-    description: "Extract 3D motion capture data and mesh from video footage using HybrIK.",
+    description: "Extract 3D motion capture data and mesh from video footage using SINJ.",
     strengths: ["Motion capture data", "Multiple frame analysis", "Dynamic pose"],
     limitations: ["Requires clear subject visibility", "Longer processing"],
     icon: Film,
@@ -190,9 +190,8 @@ export default function Build() {
             </Button>
           </Link>
           <div className="flex items-center gap-2">
-            <Box className="w-6 h-6 text-primary" />
-            <span className="text-lg font-bold tracking-tight text-foreground">AVATRYX</span>
-          </div>
+            <img src="/my-logo.png" alt="Logo" className="w-10 h-10 object-contain" />
+            <span className="text-xl font-bold tracking-tight text-foreground logo-text">AVATRYX</span>          </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <span className={selectedOption ? "text-primary" : ""}>Select Method</span>
