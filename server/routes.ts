@@ -6,7 +6,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { randomUUID } from "crypto";
-import { exec } from "child_process";
+import { execFile } from "child_process";
 
 const uploadsDir = path.join(process.cwd(), "uploads", "meshes");
 if (!fs.existsSync(uploadsDir)) {
@@ -61,9 +61,39 @@ export async function registerRoutes(
 
       fs.copyFileSync(req.file.path, inputPath);
 
-      const command = `cmd /c "cd /d \"${sinjDir}\" && set PYTHONPATH=%CD% && call sinj-env\\Scripts\\activate && python scripts/demo_image.py --img-dir . --out-dir res"`;
+      const defaultPython = process.platform === "win32"
+        ? path.join(sinjDir, "sinj-env", "Scripts", "python.exe")
+        : path.join(sinjDir, "sinj-env", "bin", "python");
+      const pythonPath = process.env.SINJ_PYTHON || defaultPython;
 
-      exec(command, async (error, stdout, stderr) => {
+      if (!fs.existsSync(pythonPath)) {
+        return res.status(500).json({
+          message: `SINJ Python interpreter not found at ${pythonPath}. Create SINJ/sinj-env or set SINJ_PYTHON.`,
+        });
+      }
+
+      const scriptPath = path.join(sinjDir, "scripts", "demo_image.py");
+      const checkpointPath = path.join(sinjDir, "pretrained_models", "sinj_hrnet.pth");
+
+      if (!fs.existsSync(scriptPath)) {
+        return res.status(500).json({ message: `SINJ demo script missing at ${scriptPath}` });
+      }
+
+      if (!fs.existsSync(checkpointPath)) {
+        return res.status(500).json({ message: `SINJ checkpoint missing at ${checkpointPath}` });
+      }
+
+      execFile(
+        pythonPath,
+        [scriptPath, "--img-dir", sinjDir, "--out-dir", outputDir],
+        {
+          cwd: sinjDir,
+          env: {
+            ...process.env,
+            PYTHONPATH: sinjDir,
+          },
+        },
+        async (error, stdout, stderr) => {
         if (error) {
           console.error("Python Error:", stderr);
           return res.status(500).json({ message: "Python execution failed" });
@@ -97,7 +127,8 @@ export async function registerRoutes(
         const updated = await storage.updateMeshPath(id, meshPath, originalName);
 
         return res.json({ ...updated, meshUrl });
-      });
+        },
+      );
 
     } catch (err: any) {
       console.error(err);
